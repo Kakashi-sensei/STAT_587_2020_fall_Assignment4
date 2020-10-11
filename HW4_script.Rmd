@@ -1,0 +1,76 @@
+---
+title: "HW4"
+author: "Tianqi(Tim)"
+date: "10/10/2020"
+output: html_document
+---
+
+```{r}
+amph <- read.csv("https://raw.githubusercontent.com/Kakashi-sensei/STAT_587_2020_fall_Assignment4/main/amphetamine.csv", header=TRUE)
+
+boxplot(Consumed ~ Treatment, data = amph2)
+
+bartlett.test(Consumed ~ Treatment, data = amph2)
+
+t1 <- aov(Consumed ~ Treatment, data = amph)
+summary(t1)
+
+install.packages("gmodels")#this package is used for Linear Combinations and Linear Trend
+library(gmodels)
+
+amph2 <- read.csv("https://raw.githubusercontent.com/Kakashi-sensei/STAT_587_2020_fall_Assignment4/main/amphetamine2.csv", header=TRUE)
+
+t1 <- aov(Consumed ~ Treatment, data = amph2)
+summary(t1)
+
+fit.contrast(t1, "Treatment", c(-1,0,1))
+print(model.tables(t1,"means"),digits=3)
+
+amph$Treatment2 <- as.factor(amph$Treatment) 
+str(amph)
+
+t2 <- aov(Consumed ~ Treatment2, data = amph)
+summary(t2)
+
+fit.contrast(t2,"Treatment2", c(-2.5, 0, 2.5))
+
+rm(list = ls())
+
+#Q2
+atp <- read.csv("https://raw.githubusercontent.com/Kakashi-sensei/STAT_587_2020_fall_Assignment4/main/atp.csv", header=TRUE)
+bartlett.test(ATP ~ Group, data = atp)
+t2 <- aov(ATP ~ Group, data = atp)
+summary(t2)
+
+model.tables(t2,"means")
+rf=c(1.45,1.19,1.05,1.07)
+sd1=sd(rf)
+a1=mean(rf)
+# for CI
+error <- qt(0.975,df=4-1)*sd1/sqrt(4)
+left <- a1-error
+right <- a1+error
+atp$Group2 <- as.factor(atp$Group)
+t2 <- aov(ATP ~ Group2, data = atp)
+fit.contrast(t2,"Group2", c(1, -1, -1, 1), conf.int=0.95)#report confi int
+
+rm(list = ls())
+
+#Q4
+let <- read.csv("https://raw.githubusercontent.com/Kakashi-sensei/STAT_587_2020_fall_Assignment4/main/lettuce.csv", header=TRUE)
+let$N2 <- as.factor(let$N)
+str(let)
+t3 <- aov(yield ~ N2, data = let)
+summary(t3)
+### tukey correction for pairwise difference
+TukeyHSD(t3)
+
+### use R test linear trend's coefficient not by hand 
+xbar <- mean(let$N)
+coeff <- unique(let$N) - xbar
+fit.contrast(t3,"N2", coeff)
+
+rm(list = ls())
+
+```
+
